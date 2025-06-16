@@ -1,0 +1,25 @@
+graph: a set of verticies and edges G = (V, E)
+can be directed or undirected
+uses: node classification, graph classification, link prediction
+graph in matrix version: when symmetric that means that the graph is undirected
+
+# how does GNNs work
+look at a node, look at neighboring nodes, do math, get results
+computational graph: 2 layered GNNs
+ * for one layer, you use whatever is directly connected to the single node
+ * for two layer, you use what is directly connected to the first node and what is connected to the nodes connected to the first node
+ * local computational done between the nodes and then the final computation (same as simple NN)
+
+# key idea: permutation invariance
+* means that if you take the feature matrix and adjacency matrix (two types of ways to represent graphs), should not matter how you order the nodes
+* f(PX, PAP^T) = f(X,A)
+* aka if you switch node 1 and node 7, output should be the same since graph is the same
+* consistenly aggregates information from node's neighborhood regardless of ordering
+
+# key idea perumation equivariance
+* isomorphic - graphs that are structurally identical, however, outputs are permutted so not in same order 
+* the function applied to the permutation of the imput should be the same as the permutation applied to the output
+
+# message passing
+* GNN layer 1: (1) message and (2) aggregation
+
