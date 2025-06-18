@@ -54,11 +54,11 @@ print(example_data.shape)  # should be [1000, 1, 28, 28] for the test set this i
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
-        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
-        self.conv2_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(320, 50)
-        self.fc2 = nn.Linear(50, 10)
+        self.conv1 = nn.Conv2d(1, 10, kernel_size=5) #conv1 means convolutional layer 1, 1 is the number of input channels (grayscale image), 10 is the number of output channels (filters), kernel_size=5 means a 5x5 filter
+        self.conv2 = nn.Conv2d(10, 20, kernel_size=5) #conv2 is the second convolutional layer, 10 is the number of input channels (output from conv1), 20 is the number of output channels (filters)
+        self.conv2_drop = nn.Dropout2d() # Dropout layer to prevent overfitting
+        self.fc1 = nn.Linear(320, 50) #fc1 means fully connected layer 1, 320 is the flattened size of the output from the second convolution layer
+        self.fc2 = nn.Linear(50, 10) #fc2 is the final fully connected layer, 10 is the number of output classes (digits 0-9)
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), 2)) # Apply ReLU activation and max pooling after the first convolution layer
@@ -78,18 +78,18 @@ test_losses = []
 test_counter = [i * len(train_loader.dataset) for i in range(n_epochs + 1)]
 test_accuracies = []
 
-def train(epoch):
-    network.train()
-    for batch_idx, (data, target) in enumerate(train_loader):
-        optimizer.zero_grad()
-        output = network(data)
-        loss = F.nll_loss(output, target)
-        loss.backward()
-        optimizer.step()
-        if batch_idx % log_interval == 0:
-            print(f'Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} ({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}')
-            train_losses.append(loss.item())
-            train_counter.append(batch_idx * len(data))
+# def train(epoch):
+#     network.train()
+#     for batch_idx, (data, target) in enumerate(train_loader):
+#         optimizer.zero_grad()
+#         output = network(data)
+#         loss = F.nll_loss(output, target)
+#         loss.backward()
+#         optimizer.step()
+#         if batch_idx % log_interval == 0:
+#             print(f'Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} ({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}')
+#             train_losses.append(loss.item())
+#             train_counter.append(batch_idx * len(data))
 
 
 def train(epoch):
