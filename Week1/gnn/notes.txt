@@ -23,3 +23,111 @@ computational graph: 2 layered GNNs
 # message passing
 * GNN layer 1: (1) message and (2) aggregation
 
+
+graph neural network using pytorch geometric, link: https://www.youtube.com/watch?v=-UjytpbqX4A
+* the loss tells you the gradient of all parameters
+* based on the gradients, your optimizer comes in, look at the gradients, and performs one step optimization based on the gradients
+* you compute gradients on all the parameters and perform the optimizer based on the gradients
+
+logic of a GNNStack:
+data.x         ← initial node features (input)
+   ↓
+GNN Layer 1
+   ↓
+ReLU + Dropout + Norm
+   ↓
+GNN Layer 2
+   ↓
+ReLU + Dropout + Norm
+   ↓
+GNN Layer 3
+   ↓
+(emb)          ← saved node embeddings
+   ↓
+Pooling        ← only for graph-level tasks
+   ↓
+MLP
+   ↓
+Output (log softmax)
+
+
+---- customConv(pyg_nn.MessagePassing) is a custom convolution layer instead of usiing GCNConv and GINConv --- 
+* this is useful for when you want to fine tune your model or when you're doing prototyping or research
+* in a GNN layer, node features are updated by exchanging mesages along edges -> PyG structures this with 4 steps
+(1) aggr = 'add'
+    * sets the aggregation method to combine messages from neighbors
+    * "add" - summ of all messages (default, like in GCN or GIN)
+        * this option is more expressive because it can distinguise from different numbers of neighbors (node degree matters)
+        * however, can lead to large vals with high degree nodes, which may destabilize training
+        * might overemphasize nodes with many neighbors
+    * "mean" - average of all messages (like GraphSAGE)
+        * normalizes for node degree -> each neighbor has equal influence
+        * more robust to varying node degrees
+        * stable training in practice
+        * however, can loose expressivity -- can't distinguise btwn 2 neighbors with feature [x] vs. 4 neighbors with [x]
+    * "max" - maximum value (like in some pooling layers like global_max_pool)
+        * focuses on strongest signal- useful where most important neighbor matters (attention)
+        * naturally handles sparse and noisy graphs
+        * however, not differentiable eveywhere
+        * ignores wweaker signals- could lose information in dense graphs
+
+(2) propagate(edge_index, ...)
+    * starts the message passing process
+    * automatically:
+        (i) loops over edges in edge_index (a tensor of shape [2, num_edges])
+        (ii) extracts node features for each edge
+        (iii) calls 
+            * message(...) for computing the messages
+            * aggregates them for using the method in aggr
+            * then calls update(...) to produce final node embeddings
+    * basically automatically connects everything: edges (defines who talks to who) -> messages (info passed from neighbors) -> aggregation (combine all incoming messages) -> updates (use combined info to update node representation)
+    * all arguments passed to propagate() are automatically made available to messages() and update()
+
+(3) message(x_i, x_j, ...)
+    * computes the actual message sent from node j -> i along each edge
+    * x_j: features of the source node
+    * x_i: features of the target node
+    * you define this to define how you want the message to be sent
+        * e.g: return x_j - x_i #difference message, emphasize relative message
+        * e.g: return x_j * edge_weight.view(-1, 1) #emphasize bond strength
+
+(4) update(aggr_out, ...)
+    * defines how to use the aggregated messages to update each node's representation
+        * aggr_out is the result of the aggregation across neighbors
+        * you can also apply more transformations after this
+            * e.g: return self.linear(aggr_out)
+    * the default is to return aggr_out
+    * propagate will get whatever is returned from update(...) and make that equal to x, the updated node features
+
+(*) optional: Pooling
+    * once you've updated node-level embeddings, you can pool them into a graph-level representation
+    * this is used for graph classification task (e.g. determining if a molecule is toxic)
+    * e.g.: x = global_mean_pool(x, batch), where batch tells you which node belongs to which graph
+
+
+--- what is a node in a GNN? --- 
+    * a node is an entity in your graph
+    * each node has a feature vector assosicated with it, describing its current state or properties
+    * e.g.: x = data.x #shape: [num_nodes, num_features]
+        * x[i] is the feature vector of node i 
+        * the node is not stored as a seperate object, its just an index (i) in x
+            * for example, if you have node 0 and its features are [0.3, 1.2, -0.7], accessing x[0] gives you the row [0.3, 1.2, -0.7]
+            so a node is basically characterized by its features
+            * a node is implied by its features
+
+    * data.x gives you a tensor of node features -> shape is [num_nodes, num_features]
+        * e.g.: 
+            data.x = tensor([
+                [0.5, 1.0], #node 0's features
+                [0.8, 0.2], #node 1's features
+                [0.0, 1.2]  #node 2's features
+            ])
+    * data.edge_index gives you a tensor defining the endges -> shape: [2, num_edges]
+        * data.edge_index[0] is a list of the source nodes, where each edge starts
+        * data.edge_index[1] is a list of the target nodes, where each edge edges
+        * basically means it is a 2 x num_edges tensor(means row 0 = sources, row 1 = targets)
+            * e.g.: edge_index = torch.tensor([
+                [0, 1, 2], #source
+                [1, 2, 0]  #targets
+            ])
+            * this is a directed graph, if you're working with undirected graphs you'd include both directions mannually
