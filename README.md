@@ -6,5 +6,5 @@ pytorch and deep learning basics: https://pythonprogramming.net/introduction-dee
 
 GNNs:
 deep learning on graphs: https://yaoma24.github.io/dlg_book/dlg_book.pdf  
-graphs intro practical: https://danielegrattarola.github.io/posts/2021-03-12/gnn-lecture-part-2.html
-SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS: https://arxiv.org/pdf/1609.02907
+graphs intro practical: https://danielegrattarola.github.io/posts/2021-03-12/gnn-lecture-part-2.html  
+SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS: https://arxiv.org/pdf/1609.02907  
