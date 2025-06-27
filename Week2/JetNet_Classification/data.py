@@ -82,7 +82,7 @@ def get_labels(jets):
     labels = []
     
     for _, jf in jets:
-        class_label = torch.tensor(jf[0:num_classes])
+        class_label = jf[0:num_classes].clone().detach()
         labels.append(class_label)
     
     return torch.stack(labels)
