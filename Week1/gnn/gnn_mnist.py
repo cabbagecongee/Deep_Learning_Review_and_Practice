@@ -114,23 +114,6 @@ def main():
     cost_list = []
     train_acc_list, valid_acc_list = [], []
 
-    def compute_acc(model, data_loader, device):
-        correct_pred, num_examples = 0, 0
-        for features, targets in data_loader:
-            features = features.to(device)
-            targets = targets.to(device)
-            logits, probas = model(features)
-            _, predicted_labels = torch.max(probas, 1)
-            num_examples += targets.size(0)
-            correct_pred += (predicted_labels == targets).sum()
-        return correct_pred.float()/num_examples * 100
-        
-
-    start_time = time.time()
-
-    cost_list = []
-    train_acc_list, valid_acc_list = [], []
-
 
     for epoch in range(NUM_EPOCHS):
         
@@ -172,6 +155,26 @@ def main():
     elapsed = (time.time() - start_time)/60
     print(f'Total Training Time: {elapsed:.2f} min')
 
+    plt.plot(cost_list)
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title(f"Loss over {NUM_EPOCHS} Epochs")
+    plt.savefig("gnn_loss.png")
+    plt.show()
 
-if __name__ == "__main__":
+    plt.plot(train_acc_list)
+    plt.xlabel("Epoch")
+    plt.ylabel("Training Accuracy")
+    plt.title(f"Training Accuracy over {NUM_EPOCHS} Epochs")
+    plt.savefig("gnn_train_acc.png")
+    plt.show()
+
+    plt.plot(valid_acc_list)
+    plt.xlabel("Epoch")
+    plt.ylabel("Validation Accuracy")
+    plt.title(f"Validation Accuracy over {NUM_EPOCHS} Epochs")
+    plt.savefig("gnn_valid_acc.png")
+    plt.show()
+
+if __name__ == "__main__":  
     main()

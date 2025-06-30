@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jetnet-job
+  namespace: cms-ml
+spec:
+  template:
+    spec:
+      containers:
+      - name: jetnet
+        image: pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
+        command:
+        - sh
+        - -c
+        - |
+          cd /opt/repo/Deep_Learning_Review_and_Practice/Week2/JetNet_Classification && \
+          pip install --upgrade pip && \
+          pip install numpy pandas matplotlib tqdm scikit-learn seaborn weaver-core jetnet tensorboard && \
+          python main.py
+        volumeMounts:
+        - name: git-repo
+          mountPath: /opt/repo
+        resources:
+          limits:
+            memory: "8Gi"
+            cpu: "2"
+            nvidia.com/gpu: "1"
+          requests:
+            memory: "8Gi"
+            cpu: "2"
+            nvidia.com/gpu: "1"
+
+      initContainers:
+      - name: init-clone-repo
+        image: alpine/git
+        args:
+        - clone
+        - --single-branch
+        - https://github.com/cabbagecongee/Deep_Learning_Review_and_Practice
+        - /opt/repo/Deep_Learning_Review_and_Practice
+        volumeMounts:
+        - name: git-repo
+          mountPath: /opt/repo
+        resources:
+          limits:
+            memory: "600Mi"
+            cpu: "1"
+          requests:
+            memory: "512Mi"
+            cpu: "1"
+
+      volumes:
+      - name: git-repo
+        emptyDir: {}
+      restartPolicy: Never
+  backoffLimit: 3

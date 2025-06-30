@@ -93,19 +93,19 @@ plt.plot(total_loss)
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.title(f"Loss on {NUM_EPOCHS} epochs over 500k datapoints")
-plt.show()
+plt.savefig("ParT_loss")
 
 plt.plot(total_test_acc)
 plt.xlabel("Epoch")
 plt.ylabel("Test Accuracy")
 plt.title(f"Test Accuracy on {NUM_EPOCHS} epochs over 500k datapoints")
-plt.show()
+plt.plt.savefig("ParT_test_acc")
 
 plt.plot(total_val_acc)
 plt.xlabel("Epoch")
 plt.ylabel("Validation Accuracy")
 plt.title(f"Validation Accuracy on {NUM_EPOCHS} epochs over 500k datapoints")
-plt.show()
+plt.savefig("ParT_val_acc")
 
 
 

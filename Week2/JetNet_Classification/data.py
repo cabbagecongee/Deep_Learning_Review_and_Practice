@@ -73,7 +73,7 @@ def get_pf_mask(jets):
     masks = []
 
     for pf, _ in jets:
-        mask = torch.tensor(pf[:, -1], dtype=torch.float32).unsqueeze(0)
+        mask = pf[:, -1].clone().detach().float().unsqueeze(0)
         masks.append(mask)
     return torch.stack(masks)
 
