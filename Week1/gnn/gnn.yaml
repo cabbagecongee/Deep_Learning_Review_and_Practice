@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tn-gnn-mnist-job
+  namespace: cms-ml
+spec:
+  template:
+    spec:
+      containers:
+      - name: tn-gnn-mnist-container
+        image: pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
+        command:
+        - sh
+        - -c
+        - |
+          cd /opt/repo/Deep_Learning_Review_and_Practice/Week1/gnn && \
+          pip install --upgrade pip && \
+          pip install numpy pandas matplotlib tqdm scikit-learn seaborn weaver-core jetnet tensorboard && \
+          mkdir -p /opt/repo/output && \
+          python gnn_mnist.py
+        volumeMounts:
+        - name: git-repo 
+          mountPath: /opt/repo 
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "1"
+            nvidia.com/gpu: "1"
+          requests:
+            memory: "2Gi"
+            cpu: "1"
+            nvidia.com/gpu: "1"
+      initContainers:
+      - name: init-clone-repo
+        image: alpine/git
+        args:
+        - clone
+        - --single-branch
+        - https://github.com/cabbagecongee/Deep_Learning_Review_and_Practice
+        - /opt/repo/Deep_Learning_Review_and_Practice
+        volumeMounts:
+        - name: git-repo
+          mountPath: /opt/repo
+        resources:
+          limits:
+            memory: "600Mi"
+            cpu: "1"
+          requests:
+            memory: "512Mi"
+            cpu: "1"
+      volumes:
+      - name: git-repo
+        emptyDir: {}
+      restartPolicy: Never
+  backoffLimit: 3

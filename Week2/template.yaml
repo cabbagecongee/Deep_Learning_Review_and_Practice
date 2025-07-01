@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: tn-job #change this to be more specific 
+  name: tn-job #change this to be more specific
   namespace: cms-ml           
 spec:
   template:

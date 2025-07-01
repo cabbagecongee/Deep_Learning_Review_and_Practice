@@ -22,7 +22,7 @@ def main():
     LEARNING_RATE = 0.01
     BATCH_SIZE = 128
     IMG_SIZE = 28
-    NUM_EPOCHS = 50
+    NUM_EPOCHS = 10
     NUM_CLASSES = 10
 
     #dataset
@@ -116,7 +116,7 @@ def main():
 
 
     for epoch in range(NUM_EPOCHS):
-        
+        epoch_costs = []
         model.train()
         for batch_idx, (features, targets) in enumerate(train_loader):
             
@@ -129,12 +129,12 @@ def main():
             cost.backward()
             optimizer.step()
             
-            cost_list.append(cost.item())
+            epoch_costs.append(cost.item())
             if not batch_idx % 150:
                 print (f'Epoch: {epoch+1:03d}/{NUM_EPOCHS:03d} | '
                     f'Batch {batch_idx:03d}/{len(train_loader):03d} |' 
                     f' Cost: {cost:.4f}')
-
+        cost_list.append(np.mean(epoch_costs))
             
 
         model.eval()
@@ -146,14 +146,18 @@ def main():
             print(f'Epoch: {epoch+1:03d}/{NUM_EPOCHS:03d}\n'
                 f'Train Accuracy: {train_acc:.2f} | Validation Accuracy: {valid_acc:.2f}')
             
-            train_acc_list.append(train_acc)
-            valid_acc_list.append(valid_acc)
+            train_acc_list.append(train_acc.cpu().item())
+            valid_acc_list.append(valid_acc.cpu().item())
             
         elapsed = (time.time() - start_time)/60
         print(f'Time elapsed: {elapsed:.2f} min')
     
     elapsed = (time.time() - start_time)/60
     print(f'Total Training Time: {elapsed:.2f} min')
+
+    train_acc_list = [x.item() if torch.is_tensor(x) else x for x in train_acc_list]
+    valid_acc_list = [x.item() if torch.is_tensor(x) else x for x in valid_acc_list]
+    cost_list = [x.item() if torch.is_tensor(x) else x for x in cost_list]
 
     plt.plot(cost_list)
     plt.xlabel("Epoch")

@@ -6,11 +6,11 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 
 
-n_epochs = 3
+n_epochs = 10
 batch_size_train = 64
 batch_size_test = 1000
 learning_rate = 0.01
-momentum = 0.5 #what is this bro -> oh its the hyperparameter for the optimizer
+momentum = 0.5 
 log_interval = 10
 
 random_seeds = 1
@@ -39,17 +39,6 @@ examples = enumerate(test_loader)
 batch_idx, (example_data, example_targets) = next(examples)
 print(example_data.shape)  # should be [1000, 1, 28, 28] for the test set this is the tensor shape of the images (1000 images, 1 channel (grayscale), 28x28 pixels)
 
-# fig = plt.figure()
-# for i in range(6):
-#     plt.subplot(2, 3, i + 1)  # 2 rows, 3 columns, i+1 is the index of the subplot
-#     plt.tight_layout()
-#     plt.imshow(example_data[i][0], cmap='gray', interpolation='none')  # example_data[i][0] is the image tensor
-#     plt.title(f"Ground Truth: {example_targets[i]}")
-#     plt.xticks([])
-#     plt.yticks([])
-# plt.show()  # Display the images in a grid format
-
-
 #building the network
 class Net(nn.Module):
     def __init__(self):
@@ -77,20 +66,6 @@ train_counter = []
 test_losses = []
 test_counter = [i * len(train_loader.dataset) for i in range(n_epochs + 1)]
 test_accuracies = []
-
-# def train(epoch):
-#     network.train()
-#     for batch_idx, (data, target) in enumerate(train_loader):
-#         optimizer.zero_grad()
-#         output = network(data)
-#         loss = F.nll_loss(output, target)
-#         loss.backward()
-#         optimizer.step()
-#         if batch_idx % log_interval == 0:
-#             print(f'Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} ({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}')
-#             train_losses.append(loss.item())
-#             train_counter.append(batch_idx * len(data))
-
 
 def train(epoch):
     network.train()
@@ -133,12 +108,9 @@ for epoch in range(1, n_epochs + 1):
     test()
 
 fig = plt.figure()
-plt.plot(train_counter, train_losses, color='blue')
-plt.scatter(test_counter, test_losses, color='red')
-plt.legend(['Train Loss', 'Test Loss'], loc='upper right')
-plt.xlabel('number of training examples seen')
-plt.ylabel('negative log likelihood loss')
-plt.xscale('log')
+plt.plot(train_losses, color='blue')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
 plt.savefig('Week1/results/mnist_cnn_loss.png')
 plt.show()  # Show the loss plot 
 

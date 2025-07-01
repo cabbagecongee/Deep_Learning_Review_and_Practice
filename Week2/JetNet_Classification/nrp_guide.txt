@@ -20,3 +20,8 @@ step by step of how to set up cluster (for my reference)
     kubectl delete job <job name> -n cms-ml
 
 
+* check memory
+    kubectl describe pod <pod-name> -n cms-ml
+
+
+
