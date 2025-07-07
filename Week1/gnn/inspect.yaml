@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-inspect
+  namespace: cms-ml
+spec:
+  containers:
+  - name: pvc-inspect
+    image: ubuntu
+    command: ["/bin/bash", "-c", "--"]
+    args: ["while true; do sleep 30; done;"]
+    volumeMounts:
+    - mountPath: /mnt/output
+      name: output-volume
+  volumes:
+  - name: output-volume
+    persistentVolumeClaim:
+      claimName: tn-gnn-output-pvc
+  restartPolicy: Never

@@ -163,21 +163,21 @@ def main():
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.title(f"Loss over {NUM_EPOCHS} Epochs")
-    plt.savefig("gnn_loss.png")
+    plt.savefig("/opt/repo/output/gnn_loss.png")
     plt.show()
 
     plt.plot(train_acc_list)
     plt.xlabel("Epoch")
     plt.ylabel("Training Accuracy")
     plt.title(f"Training Accuracy over {NUM_EPOCHS} Epochs")
-    plt.savefig("gnn_train_acc.png")
+    plt.savefig("/opt/repo/output/gnn_train_acc.png")
     plt.show()
 
     plt.plot(valid_acc_list)
     plt.xlabel("Epoch")
     plt.ylabel("Validation Accuracy")
     plt.title(f"Validation Accuracy over {NUM_EPOCHS} Epochs")
-    plt.savefig("gnn_valid_acc.png")
+    plt.savefig("/opt/repo/output/gnn_valid_acc.png")
     plt.show()
 
 if __name__ == "__main__":  

@@ -19,8 +19,10 @@ spec:
           mkdir -p /opt/repo/output && \
           python gnn_mnist.py
         volumeMounts:
-        - name: git-repo 
-          mountPath: /opt/repo 
+        - name: git-repo
+          mountPath: /opt/repo
+        - name: output-storage
+          mountPath: /opt/repo/output
         resources:
           limits:
             memory: "2Gi"
@@ -30,6 +32,7 @@ spec:
             memory: "2Gi"
             cpu: "1"
             nvidia.com/gpu: "1"
+
       initContainers:
       - name: init-clone-repo
         image: alpine/git
@@ -48,8 +51,13 @@ spec:
           requests:
             memory: "512Mi"
             cpu: "1"
+
       volumes:
       - name: git-repo
         emptyDir: {}
+      - name: output-storage
+        persistentVolumeClaim:
+          claimName: tn-gnn-output-pvc
+
       restartPolicy: Never
   backoffLimit: 3
