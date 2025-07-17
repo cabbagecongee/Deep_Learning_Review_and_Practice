@@ -1,0 +1,31 @@
+#all hyperparams and file paths
+data:
+  basedir: ./data
+  split: test
+  batch_size: 64
+  max_files: 10
+  target_class: null
+  n_particles: 150
+  normalize: true
+
+
+model:
+  input_dim:           17
+  num_classes:         10
+  pair_input_dim:      4
+  use_pre_activation_pair: false
+  embed_dims:          [128,512,128]
+  pair_embed_dims:     [64,64,64]
+  num_heads:           8
+  num_layers:          8
+  num_cls_layers:      2
+  block_params:        null
+  cls_block_params:    
+    dropout: 0
+    attn_dropout: 0
+    activation_dropout: 0
+  fc_params:           []
+  activation:          "gelu"
+  trim:                true
+  for_inference:       false
+  ckpt_path:           "ckpt/ParT_full.pt"
